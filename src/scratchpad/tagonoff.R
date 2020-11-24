@@ -42,14 +42,40 @@ map_POSIXct <- function (.x,.f) {
 alldata_path <- "C:/Users/Shirel/Documents/Goldbogen Lab/Thesis/Chapter 3- Plastic/Plastic Risk Assessment/alldata"
 
 deploy_list<- read_csv("data/raw/alldata_CAwhales.csv") %>% 
-  slice(1) %>% 
   # find prh and lunge .mat
+  slice(1) %>% 
   mutate(lungepath = map_chr(lunge_Name, findlungemat, lunge_dir = alldata_path),
          prhpath = map_chr(prh_Name, findprhmat, prh_dir = alldata_path)) %>%
   drop_na(lungepath, prhpath) %>% 
   # true false of whether the prh or lunge file has the lunges 
   mutate(haslungeDepth = map_lgl(lungepath, lungehasp)) %>% 
-  mutate(tagon = map(prhpath, get_tagon_tagoff))
+  # finding tag_on_off times from prh
+  mutate(tag_on_off = map(prhpath, get_tagon_tagoff)) %>% 
+  unnest_wider(tag_on_off) %>% 
+  # unnest lunges (make each lunge and time it's own line)
+  mutate(lunge_data = map2(lungepath, prhpath, extractlungedata)) %>% 
+  unnest_wider(lunge_data) %>% 
+  unchop(cols = c(lunge_depth, lunge_time)) %>% 
+  #adding in species names
+  mutate(
+    sun_angle = sunAngle(lunge_time, longitude = longitude, latitude = latitude)$altitude,
+    dayperiod = factor(
+      case_when(
+        sun_angle > 0 ~ "day",
+        sun_angle < -18 ~ "night",
+        TRUE ~ "twilight" #otherwise
+      ),
+      labels = c("day", "twilight", "night"),
+      levels = c("day", "twilight", "night")
+    )
+  ) %>% 
+  mutate(SpeciesCode = substr(deployID, start = 1, stop = 2),
+         Species = case_when(
+           SpeciesCode == "Bm" ~ "B. musculus",
+           SpeciesCode == "Bp" ~ "B. physalus",
+           SpeciesCode == "mn" ~ "M. novaeangliae",
+           SpeciesCode == "bw" ~ "B. musculus",
+           SpeciesCode == "bp" ~ "B. physalus")) 
 
 #----
   
@@ -62,7 +88,13 @@ deploy_list<- read_csv("data/raw/alldata_CAwhales.csv") %>%
 #need to get DN from prhpath to replace t
 #use lat longs as they are 
 
-dayperiod <- sunAngle(prhpath$DN, deploy_list$longitude, deploy_list$latitude, useRefraction = FALSE)
+#need column called sunAngle 
+
+
+
+dayperiod <- function(deploy_list) {
+  sunAngle(lungetime, deploy_list$longitude, deploy_list$latitude, useRefraction = FALSE)
+}
 
 
 function that will take a vector of times and lat long to tell me if it's day nught or twi 

@@ -1,6 +1,6 @@
 #---- Set Up ----
-library(R.matlab)
 library(lubridate)
+library(R.matlab)
 library(tidyverse)
 
 # data information
@@ -66,18 +66,17 @@ get_tagon_tagoff <- function(prhpath) {
   list(tag_on = tag_on, tag_off = tag_off)
 }
 
-dielperiod_hours <- function(tag_on, tag_off, longitude, latitude, delta_t = 60) {
-  time <- seq(tag_on, tag_off, by = paste(delta_t, "secs"))
-  altitude <- sunAngle(time, longitude, latitude)$altitude 
-  list(day_hours = delta_t * sum(altitude > 0) / 3600,
-       night_hours = delta_t * sum(altitude < -18) / 3600,
-       twilight_hours = delta_t * sum(altitude >= -18 & altitude <= 0) / 3600)
+# this will be hardcoded with buckets based on Choy et al 2019 
+cut_depth <- function(lunge_depth) {
+  depth_bucket = cut(lunge_depth, 
+                     breaks = c(-Inf, 25, 100, 250, Inf),
+                     labels = c("Surface (<25m)", "Shallow (25-100m)", "Moderate (100-250m)", "Deep (>250m)"))
 }
 
 # ---- Process Data ----
 deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>% 
   # find prh and lunge .mat
-  slice(15:17) %>% 
+  slice(1:5, 20:22, 70:72) %>% 
   mutate(lungepath = map_chr(lunge_Name, findlungemat, lunge_dir = alldata_path),
          prhpath = map_chr(prh_Name, findprhmat, prh_dir = alldata_path)) %>%
   drop_na(lungepath, prhpath) %>% 
@@ -86,9 +85,6 @@ deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>%
   # finding tag_on_off times from prh
   mutate(tag_on_off = map(prhpath, get_tagon_tagoff)) %>% 
   unnest_wider(tag_on_off) %>% 
-  #adding the hours that each deployment is in each diel cycle (day/night/twi hours)
-  mutate(dielperiod_hours = pmap(list(tag_on, tag_off, longitude, latitude), dielperiod_hours)) %>% 
-  unnest_wider(dielperiod_hours) %>% 
   #adding species names
   mutate(SpeciesCode = substr(deployID, start = 1, stop = 2),
          Species = case_when(
@@ -103,19 +99,8 @@ lunges <- deployments %>%
   mutate(lunge_data = map2(lungepath, prhpath, extractlungedata)) %>% 
   unnest_wider(lunge_data) %>% 
   unchop(cols = c(lunge_depth, lunge_time)) %>% 
-  #adding in sun angle (altitude) based on at long and time
-  mutate(
-    sun_angle = sunAngle(lunge_time, longitude = longitude, latitude = latitude)$altitude,
-    dielperiod = factor(
-      case_when(
-        sun_angle > 0 ~ "day",
-        sun_angle < -18 ~ "night",
-        TRUE ~ "twilight" #otherwise
-      ),
-      labels = c("day", "twilight", "night"),
-      levels = c("day", "twilight", "night")
-    )
-  ) 
+  mutate(depth_bucket = cut_depth(lunge_depth))
+
 
 # ---- Export Data ----
 saveRDS(deployments, "data/output/deployments.RDS")

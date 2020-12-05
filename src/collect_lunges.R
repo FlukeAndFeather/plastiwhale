@@ -1,8 +1,4 @@
 #---- Set Up ----
-library(lubridate)
-library(R.matlab)
-library(tidyverse)
-
 # data information
 alldata_path <- "C:/Users/Shirel/Documents/Goldbogen Lab/Thesis/Chapter 3- Plastic/Plastic Risk Assessment/alldata"
 
@@ -76,7 +72,7 @@ cut_depth <- function(lunge_depth) {
 # ---- Process Data ----
 deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>% 
   # find prh and lunge .mat
-  slice(1:5, 20:22, 70:72) %>% 
+  slice(1:121) %>% 
   mutate(lungepath = map_chr(lunge_Name, findlungemat, lunge_dir = alldata_path),
          prhpath = map_chr(prh_Name, findprhmat, prh_dir = alldata_path)) %>%
   drop_na(lungepath, prhpath) %>% 
@@ -94,7 +90,7 @@ deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>%
            SpeciesCode == "bw" ~ "B. musculus",
            SpeciesCode == "bp" ~ "B. physalus")) 
 
-lunges <- deployments %>% 
+ lunges <- deployments %>% 
   # unnest lunges (make each lunge and time it's own line)
   mutate(lunge_data = map2(lungepath, prhpath, extractlungedata)) %>% 
   unnest_wider(lunge_data) %>% 

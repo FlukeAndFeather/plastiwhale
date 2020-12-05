@@ -1,19 +1,40 @@
 # MAKEFILE AKA src/MAKE.R
+library(lubridate)
+library(oce)
+library(R.matlab)
+library(tidyverse)
+library(rorqual.morpho)
 
 # 1. Collect data using collect_lunges
-
-# If [RDS files] don't exist:
-source("src/collect_lunges.R")
-# Else:
-deployments <- readRDS("data/output/deployments.RDS")
-lunges <- readRDS("data/output/lunges.RDS")
-# same for lunges
+if (!all(file.exists("data/output/deployments.RDS", "data/output/lunges.RDS"))) { #want to test if it exists in the environment 
+  source("src/collect_lunges.R")
+} else {
+  deployments <- readRDS("data/output/deployments.RDS") 
+  lunges <- readRDS("data/output/lunges.RDS")
+}
 
 # 2. Diel cycle calculations
-source("src/dielperiod.R")
-# If RDS files exist ...
-# Else ...
+if (!all(file.exists("data/output/diel_deployments.RDS", "data/output/diel_lunges.RDS"))) { 
+  source("src/dielperiod.R")
+} else {
+  diel_deployments <- readRDS("data/output/diel_deployments.RDS")            
+  diel_lunges <- readRDS("data/output/diel_lunges.RDS")
+}
+
 
 # 3. Feeding metric calculations
-source("src/depth_buckets.R")
-# ...
+if (!all(file.exists("data/output/diel_deployments_pivot.RDS", "data/output/lunge_counts.RDS", "data/output/lunge_rates.RDS"))) { 
+  source("src/depth_buckets.R")
+} else {
+  lunge_counts <- readRDS("data/output/lunge_counts.RDS") &           
+  diel_deployments_pivot <- readRDS("data/output/diel_deployments_pivot.RDS") 
+  lunge_rates <- readRDS("data/output/lunge_rates.RDS") 
+}
+
+# 4. Collect morphology data
+if (!all(file.exists("data/output/morphology.RDS"))) {  
+  source("src/collect_morphology.R")
+} else {
+  morphology <- readRDS("data/output/morphology.RDS") 
+}
+

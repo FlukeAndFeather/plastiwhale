@@ -34,3 +34,8 @@ diel_lunges <- lunges %>%
       levels = c("day", "twilight", "night")
     )
   ) 
+
+
+# ---- Export Data ----
+saveRDS(diel_deployments, "data/output/diel_deployments.RDS")
+saveRDS(diel_lunges, "data/output/diel_lunges.RDS")

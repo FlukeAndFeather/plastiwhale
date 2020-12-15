@@ -26,15 +26,25 @@ if (!all(file.exists("data/output/diel_deployments.RDS", "data/output/diel_lunge
 if (!all(file.exists("data/output/diel_deployments_pivot.RDS", "data/output/lunge_counts.RDS", "data/output/lunge_rates.RDS"))) { 
   source("src/depth_buckets.R")
 } else {
-  lunge_counts <- readRDS("data/output/lunge_counts.RDS") &           
+  lunge_counts <- readRDS("data/output/lunge_counts.RDS")            
   diel_deployments_pivot <- readRDS("data/output/diel_deployments_pivot.RDS") 
   lunge_rates <- readRDS("data/output/lunge_rates.RDS") 
 }
 
 # 4. Collect morphology data
-if (!all(file.exists("data/output/morphology.RDS"))) {  
+if (!file.exists("data/output/morphology.RDS")) {  
   source("src/collect_morphology.R")
 } else {
   morphology <- readRDS("data/output/morphology.RDS") 
 }
+
+# 5. Collect prey data
+if (!file.exists("data/output/prey.RDS")) {  
+  source("src/collect_prey.R")
+} else {
+  prey <- readRDS("data/output/prey.RDS") 
+}
+
+
+
 

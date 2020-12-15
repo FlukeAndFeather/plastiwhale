@@ -1,6 +1,7 @@
-# simulating daily feeding rates
+#Simulations
+#---- Set Up ----
+#MAKE.R must be run first 
 
-#i moved it outside the function so it would be easier to change over time if needed
 #diel period durations for simulation
 dielperiod_durs <- tribble(
   ~dielperiod, ~hours,
@@ -22,10 +23,12 @@ plastic_dis <- tribble(
   mutate(depth_bucket = factor(depth_bucket, levels = c("Surface (<25m)", "Shallow (25-100m)", "Moderate (100-250m)", "Deep (>250m)")))
 
 
-#function takes in lunge_rates, species+prey combo and gives the simulated nuber of lunges per depth bucket
+# ---- Utility Functions ----
+  
+#Uses lunge_rates, species+prey combo to provide the simulated number of lunges per depth bucket
 simulate_feeding <- function(n, species, prey, empirical_rates) {
   empirical_rates %>% 
-    filter(SpeciesCode == species, prey_type == prey, period_hours > 0) %>% # filter lunge_rates (the empirical)
+    filter(species_code == species, prey_type == prey, period_hours > 0) %>% # filter lunge_rates (the empirical)
     group_by(dielperiod, depth_bucket) %>%   # group by period and depth bucket
     sample_n(n, replace = TRUE) %>%  #sample more than once if there are less than n
     mutate(simulation_id = row_number()) %>% #number the samples 
@@ -36,7 +39,7 @@ simulate_feeding <- function(n, species, prey, empirical_rates) {
 }
 
 
-#simulate body size 
+#simulates body size 
 simulate_morpho <- function(n, species) {
   morphology %>% 
     filter(species_code == species) %>% 
@@ -44,15 +47,8 @@ simulate_morpho <- function(n, species) {
     mutate(simulation_id = row_number())
 }
 
-n_sim <- 10
-sim_sp <- "bp"
-
-#provides a simulated whale and a simulated body length for that whale 
-lunges_and_length <- simulate_feeding(n = n_sim, species = sim_sp, prey = "krill", empirical_rates = lunge_rates) %>% 
-  left_join(simulate_morpho(n = n_sim, species = sim_sp), by = "simulation_id")
-
-
-simulate_h2o_plastic <- function(feeding_simulation, retention) { #does all things to calculate plastic from water. can set retention  
+#Simulates the getting of plastic from the water, including retention 
+simulate_h2o_plastic <- function(feeding_simulation, retention) {  
   feeding_simulation %>%
     left_join(plastic_dis, by = "depth_bucket") %>% 
     mutate(plastic_conc = rpois(n(), lambda),
@@ -62,8 +58,7 @@ simulate_h2o_plastic <- function(feeding_simulation, retention) { #does all thin
 }
 
 
-#plastic in prey doesn't vary by depth
-# where prey_plastic_conc is in pp/kg
+# Simulates the getting of plastic from the prey, pp/kg
 simulate_prey_plastic <- function(feeding_simulation, prey_type, prey_plastic_conc) { # as above, but prey and rlnorm instead of rpois
   feeding_simulation %>%
     group_by_at(vars(-depth_bucket,- daily_lunges)) %>% 
@@ -79,41 +74,50 @@ simulate_prey_plastic <- function(feeding_simulation, prey_type, prey_plastic_co
            total_biomass = biomass_density * engulfment_m3 * daily_lunges * catch_percentage,
            plastic_prey = total_biomass * prey_plastic_conc)
 }
+ 
 
 
-total_plastic <- simulate_h2o_plastic(feeding_simulation = lunges_and_length, 0.75) %>%  #using 0.75 for example 
-  left_join(simulate_prey_plastic(feeding_simulation = lunges_and_length, "krill", prey_plastic_conc = 1), by = "simulation_id")
+# ---- Process Data ---- 
+
+# Need to provide n_sim, sim_sp, and sim_prey 
+n_sim <- 10
+sim_sp <- "bw"
+sim_prey <- "krill"
 
 
-#scenario.r - specify scens and run each 
-#3 reten
-## 3 krill plastic 
+#Provides a simulated whale and a simulated body length for that whale 
+lunges_and_length <- simulate_feeding(n = n_sim, species = sim_sp, prey = sim_prey, empirical_rates = lunge_rates) %>% 
+  left_join(simulate_morpho(n = n_sim, species = sim_sp), by = "simulation_id")
+
+#Combines plastic from water and plastic from prey. Use for the scenarios by changing parameters 
+total_plastic <- simulate_h2o_plastic(feeding_simulation = lunges_and_length, retention =  0.75) %>%  #can be .25, .5, .75
+  left_join(simulate_prey_plastic(feeding_simulation = lunges_and_length, "krill", prey_plastic_conc = 1), by = "simulation_id") #change prey and prey_plastic_conc
+#can we make prey plastic conc into a tibble? 
 
 
-#flextable 
-
-
-
-
-#Pconc
-#one coulmn that's depth bucket 
-# return simulated rates#surface is a mean of 1 particle per m3 sd (check laurens)
-#shallow is 3
-#mod 10 
-# deep is 6 
-# group by depth_bucket and sim_id 
-
-tribble(
-  ~species, ~prey_type, ~depth_bucket, ~daily_lunges, ~simulation_id,
-  "mn",     "fish",     "Surface",     25[l1],        1,
-  "mn",     "fish",     "Shallow",     75[l2],        1,
-  "mn",     "fish",     "Moderate",    ...,           1,
-  "mn",     "fish",     "Deep",        ...,           1,
-  ... (n_simulations x n_buckets) rows total
-  "mn",     "fish",     "Deep",        ...,           n
-)
-
-#l1 = sampled(day, surface) x day_hours + sampled(twilight, surface) x twilight_hours + sampled(night, surface) x night_hours, line 25
-
-
-
+plastic_conc_krill_model <- tribble(
+  ~prey,        ~p/kg,
+  "Low",       1.8, 
+  "Medium",    6.0,
+  "High",       25
+  
+  
+#20 krill per gram, 20 000 in kg
+#there's no tspin!!! 
+#go with empirical here, look in desforges paper and chinese papers
+#freuency of occurence of 6 percent, better than the bioacculumation data in alava  
+#25/20 000
+#two distributions: emp ie freq of occurence, have a scalar, from 1% to 5% 10%  
+#high from water in asia
+#for fish use rochman (30%) and hipfner (2%) and for medium us 13% best and most relevant data that we know of.
+#high from japanses waters- because this is what we might have in future is 77% 
+#given the data that exist, we're bein conservative. a yes means 1 particle but there could be more 
+#need weight range of an anchovy 
+  
+  plastic_conc_fish_model <- tribble(
+    ~prey,        ~p/kg,
+    "Low",       0.7,
+    "Medium",    10,*
+    "High",       26
+    
+  

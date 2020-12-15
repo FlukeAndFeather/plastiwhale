@@ -72,7 +72,7 @@ cut_depth <- function(lunge_depth) {
 # ---- Process Data ----
 deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>% 
   # find prh and lunge .mat
-  slice(1:121) %>% 
+  slice(1:10) %>% 
   mutate(lungepath = map_chr(lunge_Name, findlungemat, lunge_dir = alldata_path),
          prhpath = map_chr(prh_Name, findprhmat, prh_dir = alldata_path)) %>%
   drop_na(lungepath, prhpath) %>% 
@@ -82,13 +82,13 @@ deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>%
   mutate(tag_on_off = map(prhpath, get_tagon_tagoff)) %>% 
   unnest_wider(tag_on_off) %>% 
   #adding species names
-  mutate(SpeciesCode = substr(deployID, start = 1, stop = 2),
+  mutate(species_code = substr(deployID, start = 1, stop = 2),
          Species = case_when(
-           SpeciesCode == "Bm" ~ "B. musculus",
-           SpeciesCode == "Bp" ~ "B. physalus",
-           SpeciesCode == "mn" ~ "M. novaeangliae",
-           SpeciesCode == "bw" ~ "B. musculus",
-           SpeciesCode == "bp" ~ "B. physalus")) 
+           species_code == "Bm" ~ "B. musculus",
+           species_code == "Bp" ~ "B. physalus",
+           species_code == "mn" ~ "M. novaeangliae",
+           species_code == "bw" ~ "B. musculus",
+           species_code == "bp" ~ "B. physalus")) 
 
  lunges <- deployments %>% 
   # unnest lunges (make each lunge and time it's own line)

@@ -12,7 +12,7 @@ lunge_counts <- diel_lunges %>%
 diel_deployments_pivot <- diel_deployments %>% 
   rename_at(vars(ends_with("_hours")), ~ str_replace(.x, "_hours", "")) %>%  #removes the letters in quotes so that we are comparing the same words
   pivot_longer(cols = c(day, twilight, night), names_to = "dielperiod", values_to = "period_hours") %>% #new names, values already in the columns
-  select(deployID, dielperiod, period_hours, SpeciesCode, prey_type) %>% 
+  select(deployID, dielperiod, period_hours, species_code, prey_type) %>% 
   mutate(dielperiod = factor(dielperiod, levels = c("day", "twilight", "night")))
 
 #rates per time of day AND per depth bin 

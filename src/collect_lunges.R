@@ -1,6 +1,6 @@
 #---- Set Up ----
 # data information
-alldata_path <- "C:/Users/Shirel/Documents/Goldbogen Lab/Thesis/Chapter 3- Plastic/Plastic Risk Assessment/alldata"
+alldata_path <- "C:/Users/Gold Field/Documents/Shirel/Chapter 3- Plastic/Plastic Risk Assessment/alldata"
 
 # ---- Utility Functions ----
 #function takes path to alldata and name of file within that folder (lunge files)
@@ -29,7 +29,7 @@ extractlungedata<- function(lungepath, prhpath) {
   LungeI <- find_lunge_mat$LungeI
   LungeDepth <- find_lunge_mat$LungeDepth
   LungeDN <- find_lunge_mat$LungeDN
-  
+
   # If lunge mat doesn't have LungeDepth *or* LungeDN, have to open the PRH
   if(is.null(LungeDepth) || is.null(LungeDN)) {
     prh <- readMat(prhpath)
@@ -62,17 +62,18 @@ get_tagon_tagoff <- function(prhpath) {
   list(tag_on = tag_on, tag_off = tag_off)
 }
 
-# this will be hardcoded with buckets based on Choy et al 2019 
+# this will be hardcoded with buckets based on Choy et al 2019
+#export to an rds file 
 cut_depth <- function(lunge_depth) {
   depth_bucket = cut(lunge_depth, 
-                     breaks = c(-Inf, 25, 100, 250, Inf),
-                     labels = c("Surface (<25m)", "Shallow (25-100m)", "Moderate (100-250m)", "Deep (>250m)"))
+                     breaks = c(-Inf, 5, 50, 150, Inf),
+                    labels = c("Surface (<5m)", "Shallow (5-50m)", "Moderate (50-150m)", "Deep (>150m)"))
 }
 
 # ---- Process Data ----
 deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>% 
   # find prh and lunge .mat
-  slice(1:10) %>% 
+  # slice(185:199) %>% 
   mutate(lungepath = map_chr(lunge_Name, findlungemat, lunge_dir = alldata_path),
          prhpath = map_chr(prh_Name, findprhmat, prh_dir = alldata_path)) %>%
   drop_na(lungepath, prhpath) %>% 
@@ -81,6 +82,7 @@ deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>%
   # finding tag_on_off times from prh
   mutate(tag_on_off = map(prhpath, get_tagon_tagoff)) %>% 
   unnest_wider(tag_on_off) %>% 
+  drop_na(tag_on, tag_off) %>% 
   #adding species names
   mutate(species_code = substr(deployID, start = 1, stop = 2),
          Species = case_when(
@@ -90,14 +92,16 @@ deployments <- read_csv("data/raw/alldata_CAwhales.csv") %>%
            species_code == "bw" ~ "B. musculus",
            species_code == "bp" ~ "B. physalus")) 
 
- lunges <- deployments %>% 
+  lunges <- deployments %>% 
   # unnest lunges (make each lunge and time it's own line)
   mutate(lunge_data = map2(lungepath, prhpath, extractlungedata)) %>% 
   unnest_wider(lunge_data) %>% 
   unchop(cols = c(lunge_depth, lunge_time)) %>% 
   mutate(depth_bucket = cut_depth(lunge_depth))
 
-
+#----#Sanity Check ----
+#check to see if there are nas
+  
 # ---- Export Data ----
 saveRDS(deployments, "data/output/deployments.RDS")
 saveRDS(lunges, "data/output/lunges.RDS")

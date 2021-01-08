@@ -11,15 +11,17 @@ dielperiod_durs <- tribble(
   mutate(dielperiod = factor(dielperiod, levels = c("day", "twilight", "night")))
 
 #plastic distribution in water for simulation (based on Choy and Kashiwabara)
+#plastic distribution in water for simulation (based on Choy and Kashiwabara)
 plastic_dis <- tribble(
   ~depth_bucket,        ~lambda,
-  "Surface (<25m)",       1,
-  "Shallow (25-100m)",    3,
-  "Moderate (100-250m)",  10,
-  "Deep (>250m)",         6
+  "Surface (<5m)",       1,
+  "Shallow (5-50m)",    3,
+  "Moderate (50-150m)",  10,
+  "Deep (>150m)",         6
   
 ) %>% 
-  mutate(depth_bucket = factor(depth_bucket, levels = c("Surface (<25m)", "Shallow (25-100m)", "Moderate (100-250m)", "Deep (>250m)")))
+  mutate(depth_bucket = factor(depth_bucket, levels = c("Surface (<5m)", "Shallow (5-50m)", "Moderate (50-150m)", "Deep (>150m)")))
+
 
 
 #function takes in lunge_rates, species+prey combo and gives the simulated nuber of lunges per depth bucket

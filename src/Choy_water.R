@@ -23,28 +23,6 @@ Choy_cut <- Choy %>%
   filter(data_source == "observed values")
 
 
-#bounds are plastic pieces 
-# Plastic in water sampling 
-
-
-
-#option 2!! 
-#model better generalizes to the real world so matt thinks we should use that
-#empirical would be best if we really had a whale foraging 
-#data that is spatially coincident with where we know whales are feeding in this place and in the water column
-#run for both to see what we like best 
-#ask elliott- which is better emp or model  
-#use #2 and try with both sources 
-
-
-
-#could we try to refit with a gamma as the new model. this would condense the peak.  
-#justified because peak may be due to oversamplng/under at different depths 
-#is there a reason for more plastic at top? different kinds? 
-#loess has author influence, make own? fnd answer about particle difference  
-
-
-
 # Sample function. Draw samples from arbitrary distribution when all you know is 
 # 5%, 50%, and 95% quantiles
 
@@ -61,3 +39,5 @@ ggplot(predictions, aes(plastic_conc)) +
   geom_histogram(binwidth = 1, boundary = 0) +
   facet_wrap(~depth_bucket) +
   theme_minimal()
+
+

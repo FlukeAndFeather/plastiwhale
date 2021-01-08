@@ -11,17 +11,18 @@ dielperiod_durs <- tribble(
 ) %>% 
   mutate(dielperiod = factor(dielperiod, levels = c("day", "twilight", "night")))
 
-#plastic distribution in water for simulation (based on Choy and Kashiwabara)
-plastic_dis <- tribble(
+#plastic distribution in water for simulation (based on Choy and Kashiwabara) the lambda numbers need to be replaced with the Choy
+plastic_dis <- tribble( #per m3
   ~depth_bucket,        ~lambda,
-  "Surface (<25m)",       1,
-  "Shallow (25-100m)",    3,
-  "Moderate (100-250m)",  10,
-  "Deep (>250m)",         6
+  "Surface (<5m)",       1,
+  "Shallow (5-50m)",     3,
+  "Moderate (50-150m)",  10,
+  "Deep (>150m)",        6
   
 ) %>% 
-  mutate(depth_bucket = factor(depth_bucket, levels = c("Surface (<25m)", "Shallow (25-100m)", "Moderate (100-250m)", "Deep (>250m)")))
+  mutate(depth_bucket = factor(depth_bucket, levels = c("Surface (<5m)", "Shallow (5-50m)", "Moderate (50-150m)", "Deep (>150m)")))
 
+##I think we should swtich to 'predicitions' made in choy.r 
 
 # ---- Utility Functions ----
   
@@ -34,7 +35,7 @@ simulate_feeding <- function(n, species, prey, empirical_rates) {
     mutate(simulation_id = row_number()) %>% #number the samples 
     ungroup() %>% 
     left_join(dielperiod_durs, by = "dielperiod") %>% #add the sample 'day' hours
-    group_by(simulation_id,depth_bucket) %>% #doesnt change appearance, just gets it ready 
+    group_by(simulation_id, depth_bucket) %>% #doesnt change appearance, just gets it ready 
     summarise(daily_lunges = sum(lunge_rate * hours)) 
 }
 
@@ -52,10 +53,10 @@ simulate_h2o_plastic <- function(feeding_simulation, retention) {
   feeding_simulation %>%
     left_join(plastic_dis, by = "depth_bucket") %>% 
     mutate(plastic_conc = rpois(n(), lambda),
-           all_plastic = daily_lunges*(engulfment_kg/1000)*plastic_conc) %>% 
+           all_plastic = daily_lunges * engulf_m3_skr * plastic_conc) %>% 
     group_by(simulation_id) %>% 
     summarize(retained_plastic = sum(all_plastic) * retention)
-}
+} #per day per animal 
 
 
 # Simulates the getting of plastic from the prey, pp/kg
@@ -71,8 +72,8 @@ simulate_prey_plastic <- function(feeding_simulation, prey_type, prey_plastic_co
                                      1,
                                      pmap_dbl(list(daily_lunges, catch_alpha, catch_beta),
                                               ~ mean(rbeta(n == ..1, alpha = ..1, beta = ..2)))),
-           total_biomass = biomass_density * engulfment_m3 * daily_lunges * catch_percentage,
-           plastic_prey = total_biomass * prey_plastic_conc)
+           total_biomass = biomass_density * engulf_m3_skr * daily_lunges * catch_percentage,
+           plastic_prey = (total_biomass/0.00008)  * prey_plastic_conc) #weight of indiv krill wet
 }
  
 
@@ -80,7 +81,7 @@ simulate_prey_plastic <- function(feeding_simulation, prey_type, prey_plastic_co
 # ---- Process Data ---- 
 
 # Need to provide n_sim, sim_sp, and sim_prey 
-n_sim <- 10
+n_sim <- 30
 sim_sp <- "bw"
 sim_prey <- "krill"
 
@@ -91,7 +92,9 @@ lunges_and_length <- simulate_feeding(n = n_sim, species = sim_sp, prey = sim_pr
 
 #Combines plastic from water and plastic from prey. Use for the scenarios by changing parameters 
 total_plastic <- simulate_h2o_plastic(feeding_simulation = lunges_and_length, retention =  0.75) %>%  #can be .25, .5, .75
-  left_join(simulate_prey_plastic(feeding_simulation = lunges_and_length, "krill", prey_plastic_conc = 1), by = "simulation_id") #change prey and prey_plastic_conc
+  left_join(simulate_prey_plastic(feeding_simulation = lunges_and_length, "krill", prey_plastic_conc = 1), by = "simulation_id") %>% 
+  select(-slopeMW, - interceptMW, -catch_alpha, -catch_beta, -catch_percentage)
+  #change prey and prey_plastic_conc
 #can we make prey plastic conc into a tibble? 
 
 

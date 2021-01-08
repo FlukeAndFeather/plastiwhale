@@ -1,6 +1,7 @@
 # MAKEFILE AKA src/MAKE.R
 library(lubridate)
 library(oce)
+library(pracma)
 library(R.matlab)
 library(tidyverse)
 library(rorqual.morpho)
@@ -12,7 +13,7 @@ if (!all(file.exists("data/output/deployments.RDS", "data/output/lunges.RDS"))) 
   deployments <- readRDS("data/output/deployments.RDS") 
   lunges <- readRDS("data/output/lunges.RDS")
 }
-
+#variable that makes buckets isnt in environment fix me
 # 2. Diel cycle calculations
 if (!all(file.exists("data/output/diel_deployments.RDS", "data/output/diel_lunges.RDS"))) { 
   source("src/dielperiod.R")
@@ -45,6 +46,7 @@ if (!file.exists("data/output/prey.RDS")) {
   prey <- readRDS("data/output/prey.RDS") 
 }
 
+# 6. Plastic from water (Choy)
 
 
 

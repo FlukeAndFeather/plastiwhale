@@ -9,7 +9,7 @@ dielperiod_hours <- function(tag_on, tag_off, longitude, latitude, delta_t = 60)
   list(day_hours = delta_t * sum(altitude > 0) / 3600,
        night_hours = delta_t * sum(altitude < -18) / 3600,
        twilight_hours = delta_t * sum(altitude >= -18 & altitude <= 0) / 3600)
-}
+} 
 
 
 

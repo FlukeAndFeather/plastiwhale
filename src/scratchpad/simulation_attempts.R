@@ -22,7 +22,8 @@ plastic_dis <- tribble(
 ) %>% 
   mutate(depth_bucket = factor(depth_bucket, levels = c("Surface (<5m)", "Shallow (5-50m)", "Moderate (50-150m)", "Deep (>150m)")))
 
-
+#If it makes sense, could use Choy data instead?
+#plastic_dis <- predictions
 
 #function takes in lunge_rates, species+prey combo and gives the simulated nuber of lunges per depth bucket
 simulate_feeding <- function(n, species, prey, empirical_rates) {
@@ -118,4 +119,31 @@ tribble(
 #l1 = sampled(day, surface) x day_hours + sampled(twilight, surface) x twilight_hours + sampled(night, surface) x night_hours, line 25
 
 
+
+plastic_conc_krill_model <- tribble(
+  ~prey,        ~p/kg,
+  "Low",       1.8, 
+  "Medium",    6.0,
+  "High",       25
+  
+  
+  #20 krill per gram, 20 000 in kg
+  #there's no tspin!!! 
+  #go with empirical here, look in desforges paper and chinese papers
+  #freuency of occurence of 6 percent, better than the bioacculumation data in alava  
+  #25/20 000
+  #two distributions: emp ie freq of occurence, have a scalar, from 1% to 5% 10%  
+  #high from water in asia
+  #for fish use rochman (30%) and hipfner (2%) and for medium us 13% best and most relevant data that we know of.
+  #high from japanses waters- because this is what we might have in future is 77% 
+  #given the data that exist, we're bein conservative. a yes means 1 particle but there could be more 
+  #need weight range of an anchovy 
+  
+  plastic_conc_fish_model <- tribble(
+    ~prey,        ~p/kg,
+    "Low",       0.7,
+    "Medium",    10,*
+      "High",       26
+    
+    
 

@@ -1,8 +1,4 @@
 #Collect Morphology
-
-#---- Set Up ----
-library(rorqual.morpho)
-
 # ---- Process Data ----
 
 #these numbers are m3
@@ -25,9 +21,9 @@ saveRDS(morphology, "data/output/morphology.RDS")
 
 
 #
-morphology %>% 
-  group_by(species_code) %>% 
-  summarise(med_kg = median(engulfment_kg),
-            med_m3 = median(engulfment_m3),
-            skr_m3 = median(engulf_m3_skr))
+#morphology %>% 
+ # group_by(species_code) %>% 
+ # summarise(med_kg = median(engulfment_kg),
+           # med_m3 = median(engulfment_m3),
+           # skr_m3 = median(engulf_m3_skr))
   

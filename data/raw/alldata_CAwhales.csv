@@ -121,8 +121,6 @@ bp15_075a,DTAG,bp15_075aprh.mat,bp15_075alunges.mat,krill,33.3962,-117.8155
 bp15_229a,DTAG,bp15_229aprh.mat,bp15_229alunges.mat,krill,33.5342,-118.662
 bp15_235a,DTAG,bp15_235aprh.mat,bp15_235alunges.mat,krill,33.5052,-118.7993
 bp15_236a,DTAG,bp15_236aprh.mat,bp15_236alunges.mat,krill,33.4092,-118.8758
-bp160912,DTAG,,,krill,,
-bp160914,DTAG,,,krill,,
 bw10_229a,DTAG,bw10_229aprh.mat,bw10_229alunges.mat,krill,33.1978,-117.508
 bw10_229b,DTAG,bw10_229bprh.mat,bw10_229blunges.mat,krill,33.2213,-117.492
 bw10_230a,DTAG,bw10_230aprh.mat,bw10_230alunges.mat,krill,33.2,-117.4783
@@ -162,7 +160,6 @@ bw12_217b,DTAG,bw12_217bprh.mat,bw12_217blunges.mat,krill,33.746,-118.4357
 bw13_191a,DTAG,bw13_191aprh.mat,bw13_191alunges.mat,krill,33.142,-117.698
 bw13_193a,DTAG,bw13_193aprh.mat,bw13_193alunges.mat,krill,33.1128,-118.8713
 bw13_207a,DTAG,bw13_207aprh.mat,bw13_207alunges.mat,krill,33.667,-118.293
-bw13_211a,DTAG,bw13_211aprh.mat,bw13_211alunges.mat,krill,33.0795,-118.9182
 bw13_214b,DTAG,bw13_214bprh.mat,bw13_214blunges.mat,krill,33.6181,-118.2843
 bw13_214c,DTAG,bw13_214cprh.mat,bw13_214clunges.mat,krill,33.6181,-118.2843
 bw13_217a,DTAG,bw13_217aprh.mat,bw13_217alunges.mat,krill,33.58348,-118.03933
@@ -182,21 +179,21 @@ Bm160716-A20,medterm,Bm160716-A20 10Hzprh.mat,Bm160716-A20_lunges.mat,krill,37.6
 Bm160717-A21,medterm,Bm160717-A21 10Hzprh.mat,Bm160717-A21_lunges.mat,krill,34.14,-119.92
 Bm160918-A08,medterm,Bm160918-A08 10Hzprh.mat,Bm160918-A08_lunges.mat,krill,33.95,-120.47
 Bm160918-A21,medterm,Bm160918-A21 10Hzprh.mat,Bm160918-A21_lunges.mat,krill,33.05,-120.15
-Bm170622-TDR12,medterm,Bm170622-TDR12 8Hzprh-002.mat,Bm170622-TDR12_lunges.mat,krill,34.12,-119.75
-Bm170622-TDR13,medterm,Bm170622-TDR13 8Hzprh-002.mat,Bm170622-TDR13_lunges.mat,krill,34.11,-119.76
+Bm170622-TDR12,medterm,Bm170622-TDR12 8Hzprh.mat,Bm170622-TDR12_lunges.mat,krill,34.12,-119.75
+Bm170622-TDR13,medterm,Bm170622-TDR13 8Hzprh.mat,Bm170622-TDR13_lunges.mat,krill,34.11,-119.76
 Bm170706-TDR11,medterm,Bm170706-TDR11 8Hzprh.mat,Bm170706-TDR11_lunges.mat,krill,32.87,-117.38
 Bm170925-TDR12,medterm,Bm170925-TDR12 8Hzprh.mat,Bm170925-TDR12_lunges.mat,krill,34.13,-120.02
-Bm170926-TDR14,medterm,Bm170926-TDR14 8Hzprh.mat,Bm170926-TDR14_lunges.mat,krill,34.11,-119.70
-Bm181021-TDR11,medterm,Bm181021-TDR11 8Hzprh.mat,Bm181021-TDR11_lunges.mat,krill,37.44,-122.90
+Bm170926-TDR14,medterm,Bm170926-TDR14 8Hzprh.mat,Bm170926-TDR14_lunges.mat,krill,34.11,-119.7
+Bm181021-TDR11,medterm,Bm181021-TDR11 8Hzprh.mat,Bm181021-TDR11_lunges.mat,krill,37.44,-122.9
 Bm181021-TDR14,medterm,Bm181021-TDR14 8Hzprh.mat,Bm181021-TDR14_lunges.mat,krill,37.47,-122.95
 Bm190709-TDR14,medterm,Bm190709-TDR14 8Hzprh.mat,Bm190709-TDR14_lunges.mat,krill,37.42,-122.87
 Bm190710-TDR15,medterm,Bm190710-TDR15 8Hzprh.mat,Bm190710-TDR15_lunges.mat,krill,38.04,-123.35
 Bm190916-TDR14,medterm,Bm190916-TDR14 8Hzprh.mat,Bm190916-TDR14_lunges.mat,krill,36.65,-122.02
 Bm190916-TDR15,medterm,Bm190916-TDR15 8Hzprh.mat,Bm190916-TDR15_lunges.mat,krill,36.62,-122.02
 Bp160912-A14,medterm,Bp160912-A14 10Hzprh.mat,Bp160912-A14_lunges.mat,krill,33.91,-120.32
-Bp160914-A20,medterm,bp160914-A20 10Hzprh.mat,bp160914-A20_lunges.mat,krill,33.90,-120.32
+Bp160914-A20,medterm,bp160914-A20 10Hzprh.mat,bp160914-A20_lunges.mat,krill,33.9,-120.32
 Bp180501-A41,medterm,bp180501-A41 10Hzprh.mat,bp180501-A41_lunges.mat,krill,33.92,-118.58
-Bp180623-A41,medterm,,,krill,34.12,-119.70
+Bp180623-A41,medterm,bp180623-A41 10Hzprh.mat,bp180623-A41_lunges.mat,krill,34.12,-119.7
 Bp180623-A44,medterm,bp180623-A44 10Hzprh.mat,bp180623-A44_lunges.mat,krill,34.13,-119.84
 Bp191022-A41,medterm,Bp191022-A41 10Hzprh.mat,Bp191022-A41_lunges.mat,krill,33.51,-118.56
 Mn170723-TDR12,medterm,Mn170723-TDR12 8Hzprh.mat,Mn170723-TDR12_lunges.mat,fish,37.82,-122.47

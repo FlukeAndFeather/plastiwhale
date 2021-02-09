@@ -3,7 +3,8 @@
 
 lunge_counts <- diel_lunges %>% 
   mutate(deployID = factor(deployID)) %>% 
-  group_by(deployID, dielperiod, depth_bucket) %>% 
+         #date = date(lunge_time)) %>% 
+  group_by(deployID, dielperiod, depth_bucket) %>% ##calendar date?? , date
   summarise(n_lunges = n(), 
             .groups = "drop") %>% 
   complete(deployID, dielperiod, depth_bucket, fill = list(n_lunges = 0)) %>% 
@@ -21,10 +22,20 @@ lunge_rates <- lunge_counts %>%
   mutate(lunge_rate = ifelse(period_hours == 0, 0, n_lunges/period_hours)) 
   #left_join(select(deployments, deployID, Species, prey_type), by = "deployID") #if you use select to join, you have to include the key (deployID in this case)
 
+stopifnot(!is.na(lunge_rates$lunge_rate))
+
+
 # ----Show Data----
 
 ggplot(diel_deployments_pivot, aes(deployID, period_hours, fill = dielperiod)) +
-  geom_col(position = "stack")
+  geom_col(position = "stack") +
+  facet_wrap(vars(species_code, prey_type), scales = "free")
+
+mean_lunges <- lunge_rates %>% 
+  group_by(species_code, dielperiod, prey_type) %>% 
+  summarise(median(lunge_rate),
+            mean(n_lunges),
+            .groups = "drop")
 
 # ---- Export Data ----
 saveRDS(lunge_counts, "data/output/lunge_counts.RDS")

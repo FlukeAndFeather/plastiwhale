@@ -112,39 +112,38 @@ ub <- function(x) mean(x) + sd(x) #upperbound
 sum.stats <- ddply(results, ~species_code,  summarise, 
                    mean = mean(retained_plastic), median = median(retained_plastic),
                    lower = lb(retained_plastic), upper = ub(retained_plastic))
-head(sum.stats)
-#need to figure out how to seperate by prey AND species
+sum.stats
 
-results <- results %>% 
-  drop_na(plastic_prey) #should i be doing this? should the rate only cover whales that are lunging? 
-
-plastic_retained <- ggplot(data = results, aes(y = retained_plastic, x = species_code, fill = species_code)) +
-  geom_flat_violin() +
-  geom_point(aes(y = retained_plastic, color = species_code), position = position_jitter(width = .15), size = .5, alpha = 0.8) +
-  geom_boxplot(width = .1, guides = FALSE, outlier.shape = NA, alpha = 0.5) +
-  # expand_limits(x = 5.25) +
-  # guides(fill = FALSE) +
-  # guides(color = FALSE) +
-  # scale_color_brewer(palette = "Spectral") +
-  # scale_fill_brewer(palette = "Spectral") +
-  coord_flip() +
-  theme_bw() 
-
-plastic_retained
+summary_results <- results %>% 
+  group_by(species_code, prey_type, dielperiod) %>% 
+  summarise(lunge_25 = quantile(daily_lunges, 0.25, na.omit = TRUE),
+            lunge_med = median(daily_lunges, na.omit = TRUE),
+            lunge_75 = quantile(daily_lunges, 0.75, na.omit = TRUE))
 
 
+#need to figure out how to separate by prey AND species
 
-g <- ggplot(data = results, aes(y = retained_plastic, x = species_code, fill = species_code)) +
+# results <- results %>% 
+#   drop_na(plastic_prey)
+
+plastic_retained <- results %>% 
+  mutate(species_prey = paste(species_code, prey_type),
+         species_prey = fct_reorder(species_prey, retained_plastic)) %>% 
+  group_by(species_prey) %>% 
+  filter(retained_plastic <= quantile(retained_plastic, 0.95)) %>% 
+  ggplot(aes(y = retained_plastic, x = species_prey, fill = species_prey)) +
   geom_flat_violin(position = position_nudge(x = .2, y = 0), alpha = .8) +
-  geom_point(aes(y = retained_plastic, color = species_code), position = position_jitter(width = .15), size = .5, alpha = 0.8) +
-  geom_point(data = sum.stats, aes(x = species_code, y = mean), position = position_nudge(x = 0.3), size = 2.5) +
-  geom_errorbar(data = sum.stats, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = 0.3), width = 0) +
-  expand_limits(x = 5.25) +
+  geom_point(aes(y = retained_plastic, color = species_prey), position = position_jitter(width = .35), size = .5, alpha = 0.8) +
+  geom_boxplot(width = .2, outlier.shape = NA, alpha = 0.5) +
+  #expand_limits(x = 5.25) +
   guides(fill = FALSE) +
   guides(color = FALSE) +
   scale_color_brewer(palette = "Spectral") +
   scale_fill_brewer(palette = "Spectral") +
+  coord_flip() +
   theme_bw() +
   raincloud_theme
 
-g
+plastic_retained
+
+

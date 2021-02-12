@@ -4,7 +4,7 @@
 lunge_counts <- diel_lunges %>% 
   mutate(deployID = factor(deployID)) %>% 
          #date = date(lunge_time)) %>% 
-  group_by(deployID, dielperiod, depth_bucket) %>% ##calendar date?? , date
+  group_by(deployID, dielperiod, depth_bucket) %>% 
   summarise(n_lunges = n(), 
             .groups = "drop") %>% 
   complete(deployID, dielperiod, depth_bucket, fill = list(n_lunges = 0)) %>% 

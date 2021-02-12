@@ -1,33 +1,54 @@
 #FIGURES
 #
+# pal <- c("B. bonaerensis" = "firebrick3",
+#          "B. borealis" = "goldenrod2", 
+#          "B. brydei" = "darkorchid3",
+#          "M. novaeangliae" = "gray30", 
+#          "B. physalus" = "chocolate3",
+#          "B. musculus" = "dodgerblue2")
 
+pal <- c("mn" = "gray30", 
+         "bp" = "chocolate3",
+         "bw" = "dodgerblue2")
 
 #1. The Map Figure ----
 
 
+  
+
 #2. 5 Panel Depth of Plastic in Water ----
 lunge_depth_species <- ggplot(lunges, aes(lunge_depth)) +
-  geom_histogram(binwidth = 5) +
-  facet_wrap(vars(species_code, prey_type), nrow = 1, scales = "free") +
-  coord_flip() +
+  #geom_histogram(binwidth = 5) +
+  geom_density(aes(color = species_code, fill = species_code), alpha = 0.2) +
+  facet_wrap(vars(species_code, prey_type), nrow = 1, scales = "free_x") +
+  coord_flip(xlim = c(400, 0)) +
   scale_x_reverse() +
-  labs(x = "Lunge Count",
-       y = "Lunge Depth") +
-  theme_minimal() 
+  scale_colour_manual(values = pal) +
+  scale_fill_manual(values = pal) +
+  labs(x = "Depth (m)",
+       y = "Lunge Count") +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
 lunge_depth_species   
 
 
-Choy_graph <- Choy %>% 
-  filter(data_source == "observed values") %>% 
-  ggplot(aes(x = med_50, y = DEPTH_m)) +
+Choy_Kashi_graph <- Choy_Kashi %>% #smooth me and add laurens data 
+  # filter(data_source == "observed values") %>% 
+  # mutate(DEPTH_m = -DEPTH_m) %>% 
+  ggplot(aes(x = med_50, y = depth_bucket)) +
   geom_ribbon(aes(xmin= lo_05, xmax = hi_95), alpha= 0.25) +
   geom_path(size = 1.5) +
-  ylim(-400, 0) +
-  theme_classic()
+  labs(x =  bquote('Plastic Concentration'~(particles/m^3)),
+       y = "") +
+  ylim(400, 0) +
+  theme_minimal()
 
-figure2 <- ggarrange(lunge_depth_species, Choy_graph)
+figure2 <- cowplot::plot_grid(lunge_depth_species, Choy_graph, 
+                              align = "h", axis = "bt", rel_widths = c(1, 0.5))
 figure2
-#need to make Choy_graph smaller and align the zero lines 
+#maybe make the color get darker as deeper? 
+#need to make only 1 y axis, depth (m) 
 
 #3. Plastic Retention from Water ----
 raincloud_theme = theme(

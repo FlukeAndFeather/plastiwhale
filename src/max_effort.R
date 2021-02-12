@@ -13,19 +13,42 @@ deploy_cycle <- lunges %>%
          max_cycle = as.numeric(tag_off - tag_on, unit = "hours" ) %/% 24 - 1, # maximum elig cycle
          is_cycle = cycle <= max_cycle) %>% # is it valid 
   filter(is_cycle) %>% 
-  group_by(deployID, species_code, cycle) %>% 
+  group_by(deployID, species_code, cycle, prey_type) %>% 
   summarise(daily_lunges = n(), .groups = "drop") 
   
- max_effort <- deploy_cycle  %>% 
-   group_by(species_code) %>% 
-   summarise(lunge_95 = quantile(daily_lunges, 0.95), .groups = "drop")
+ max_effort_data <- deploy_cycle  %>% 
+   filter(daily_lunges >= 10) %>% 
+   group_by(species_code, prey_type) %>% 
+   summarise(lunge_05 = quantile(daily_lunges, 0.05),
+             lunge_25 = quantile(daily_lunges, 0.25),
+             lunge_50 = quantile(daily_lunges, 0.50), 
+             lunge_75 = quantile(daily_lunges, 0.75),
+             lunge_95 = quantile(daily_lunges, 0.95),
+             .groups = "drop") 
  
-  
+ 
+max_effort <- tribble(
+  ~species_code, ~prey_type, ~lunge_95,
+  "mn",          "krill",    600,
+  "bp",          "krill",    454.00,
+  "bw",          "krill",    425.45,
+  "mn",          "fish",     153
+)
+
+
 #---- Plot Data ----  
 ggplot(deploy_cycle, aes(daily_lunges, color = species_code)) + 
   stat_ecdf() + 
   geom_vline(aes(xintercept = lunge_95, color = species_code),
              data = max_effort) +
+  theme_minimal()
+
+
+ggplot(deploy_cycle, aes(daily_lunges, color = species_code)) + 
+  stat_ecdf() + 
+  geom_vline(aes(xintercept = lunge_05, color = species_code),
+             data = max_effort) +
+  xlim(0, 50) +
   theme_minimal()
 
 #---- Export Data ----

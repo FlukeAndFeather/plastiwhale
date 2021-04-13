@@ -11,44 +11,6 @@ pal <- c("mn" = "gray30",
          "bp" = "chocolate3",
          "bw" = "dodgerblue2")
 
-#1. The Map Figure ----
-
-
-  
-
-#2. 5 Panel Depth of Plastic in Water ----
-lunge_depth_species <- ggplot(lunges, aes(lunge_depth)) +
-  #geom_histogram(binwidth = 5) +
-  geom_density(aes(color = species_code, fill = species_code), alpha = 0.2) +
-  facet_wrap(vars(species_code, prey_type), nrow = 1, scales = "free_x") +
-  coord_flip(xlim = c(400, 0)) +
-  scale_x_reverse() +
-  scale_colour_manual(values = pal) +
-  scale_fill_manual(values = pal) +
-  labs(x = "Depth (m)",
-       y = "Lunge Count") +
-  theme_minimal() +
-  theme(legend.position = "none") 
-
-lunge_depth_species   
-
-
-Choy_Kashi_graph <- Choy_Kashi %>% #smooth me and add laurens data 
-  # filter(data_source == "observed values") %>% 
-  # mutate(DEPTH_m = -DEPTH_m) %>% 
-  ggplot(aes(x = med_50, y = depth_bucket)) +
-  geom_ribbon(aes(xmin= lo_05, xmax = hi_95), alpha= 0.25) +
-  geom_path(size = 1.5) +
-  labs(x =  bquote('Plastic Concentration'~(particles/m^3)),
-       y = "") +
-  ylim(400, 0) +
-  theme_minimal()
-
-figure2 <- cowplot::plot_grid(lunge_depth_species, Choy_graph, 
-                              align = "h", axis = "bt", rel_widths = c(1, 0.5))
-figure2
-#maybe make the color get darker as deeper? 
-#need to make only 1 y axis, depth (m) 
 
 #3. Plastic Retention from Water ----
 raincloud_theme = theme(

@@ -2,8 +2,6 @@
 #---- Set Up ----
 #MAKE.R must be run first 
 
-set.seed(172021)
-
 #diel period durations for simulation
 dielperiod_durs <- tribble(
   ~dielperiod, ~hours,
@@ -60,7 +58,8 @@ simulate_morpho <- function(n, species_code) {
   result <- morphology %>% 
     filter(species_code == !!species_code) %>% 
     sample_n(n, replace = TRUE) %>% 
-    mutate(simulation_id = row_number())
+    mutate(length_m = length_m,
+      simulation_id = row_number())
   
   stopifnot(result$species_code == species_code)
   
@@ -80,7 +79,7 @@ simulate_h2o_plastic <- function(feeding_simulation, retention) {
 } #per day per animal 
 
 
-# Simulates the getting of plastic from the prey, pp/kg
+# Simulates the getting of plastic from the prey
 simulate_prey_plastic <- function(feeding_simulation, prey_type, prey_plastic_conc, indiv_prey_kg) { # as above, but prey and rlnorm instead of rpois
   mean_density <- function(n_lunges, logmean_biomass, logsd_biomass) {
     # Changing n_lunges from 0 to 1 gets rid of NaNs produced by rlnorm
@@ -90,7 +89,7 @@ simulate_prey_plastic <- function(feeding_simulation, prey_type, prey_plastic_co
   }
   
   feeding_prey <- feeding_simulation %>%
-    group_by(simulation_id, species_code, prey_type, engulf_m3_skr) %>% 
+    group_by(simulation_id, species_code, prey_type, engulf_m3_skr, length_m) %>% 
     summarize(daily_lunges = sum(daily_lunges),
               .groups = "drop") %>%
     left_join(prey, by = c("prey_type", "species_code"))
@@ -158,24 +157,19 @@ run_simulation <- function(species_code, retention, prey, plastic_conc,
   simulated_plastic
 }
 
-
-#Results of the Simulation
-results <- pmap_dfr(scenarios, run_simulation,
-                    n_sim = 1000,
-                    lunge_rates = lunge_rates,
-                    max_effort = max_effort)
-
-# results <- results %>% 
-#   filter(daily_lunges >= 100)
-
-#this is weird
+#Go to scenes.R 
 
 
-#almost half of the simulations are removed when daily lunges has to be greater than 0, 
-#even more if >= 1
+# #Results of the Simulation
+# results <- pmap_dfr(scenario_med, run_simulation,
+#                     n_sim = 1000,
+#                     lunge_rates = lunge_rates,
+#                     max_effort = max_effort)
+# 
+# 
+# 
+# saveRDS(results, "data/output/results.RDS")
 
-
-#saveRDS(results, "data/output/results.RDS")
 
 # load("data/output/results.RDS")
 # 

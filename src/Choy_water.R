@@ -25,13 +25,15 @@ Choy_cut <- Choy %>%
                                        "Shallow (5-50m)",
                                        "Moderate (50-150m)",
                                        "Deep (>150m)"))) %>% 
-  filter(DEPTH_m > -450) %>% # pick a maximum lunge depth
+  filter(DEPTH_m > -550) %>% # pick a maximum lunge depth
   group_by(data_source, depth_bucket) %>% 
   summarize_at(vars(lo_05, med_50, hi_95),
                list(mean)) %>% 
   ungroup() %>% 
   filter(data_source == "observed values") %>% 
   select(-data_source)
+
+
 
 
 #---- Kashiwabara Data Set Up ----
@@ -53,7 +55,20 @@ Kashi_cut <- Kashiwabara %>%
             .groups = "drop")
 
 
-Choy_Kashi <- rbind(Kashi_cut, Choy_cut)
+
+depth_m <- tribble(
+  ~depth_m, ~depth_bucket,
+  0,         "Surface (0-0.5m)",
+  0.5,       "Sub-Surface (0.5-5m)",
+  5,         "Shallow (5-50m)",
+  50,        "Moderate (50-150m)",
+  150,        "Deep (>150m)",
+)
+
+Choy_Kashi <- rbind(Kashi_cut, Choy_cut) %>% 
+  left_join(depth_m, by = "depth_bucket")
+
+
 
 # %>% 
 #   mutate(depth_bucket = fct_relevel(depth_bucket,

@@ -1,10 +1,13 @@
 # MAKEFILE AKA src/MAKE.R
+library(ggtext)
+library(glue)
 library(ggpubr)
 library(lubridate)
 library(oce)
 library(pracma)
 library(plyr)
 library(R.matlab)
+library(scales)
 library(tidyverse)
 library(rorqual.morpho)
  
@@ -80,7 +83,7 @@ if (!all(file.exists("data/output/scenarios.RDS"))) {
 }
 
 #9. Run simulations 
-# Go to that .R
+# Go to that simulations.R
 
 
 

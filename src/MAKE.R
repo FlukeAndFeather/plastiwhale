@@ -1,8 +1,13 @@
 # MAKEFILE AKA src/MAKE.R
 library(ggtext)
+library(glmm)
 library(glue)
 library(ggpubr)
+library(lme4)
+library(lmerTest)
 library(lubridate)
+library(MASS)
+library(MCMCglmm)
 library(oce)
 library(pracma)
 library(plyr)
@@ -10,10 +15,11 @@ library(R.matlab)
 library(scales)
 library(tidyverse)
 library(rorqual.morpho)
- 
+
+
+
 # 1. Collect data using collect_lunges
 if (!all(file.exists("data/output/deployments.RDS", "data/output/lunges.RDS"))) { 
-  #want to test if it exists in the environment 
   source("src/collect_lunges.R")
 } else {
   deployments <- readRDS("data/output/deployments.RDS") 
@@ -81,6 +87,8 @@ if (!all(file.exists("data/output/scenarios.RDS"))) {
 } else {
   scenarios <- readRDS("data/output/scenarios.RDS")
 }
+
+#9. Simulation 
 
 #9. Run simulations 
 # Go to that simulations.R

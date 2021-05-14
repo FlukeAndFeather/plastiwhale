@@ -51,7 +51,9 @@ lunge_depth_species <- lunges %>%
        y = "Lunge Proportion") +
   theme_minimal() +
   theme(legend.position = "none", 
-        axis.text.x = element_blank())  
+        axis.text.x = element_blank(),
+        axis.title.x = element_text(size = 13),
+        axis.title.y = element_text(size = 13))  
 lunge_depth_species   
 
  
@@ -62,9 +64,28 @@ Choy_Kashi_graph <- Choy_Kashi_data %>%
   labs(x =  bquote('Plastic Concentration'~(particles/m^3)),
        y = "") +
  # scale_y_reverse() +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.title.x = element_text(size = 13))
 Choy_Kashi_graph
 
 figure2 <- cowplot::plot_grid(lunge_depth_species, Choy_Kashi_graph, 
                               align = "h", axis = "bt", rel_widths = c(1, 0.5))
 figure2
+
+
+savePlot(filename = "figure2",    # Name of the file to be saved
+         type = c("tiff", "eps", "pdf"),
+         device = dev.cur(), # Number of the device to be saved
+         restoreConsole = TRUE)
+
+
+tiff("my_plot", compression = "zip")
+
+#Summary
+foo_depth <- lunges %>% 
+  mutate(lunge_depth = ifelse(lunge_depth < 0, 0, lunge_depth)) %>% 
+  left_join(whale_latin_names, by = "species_code") %>% 
+  group_by(species_code, prey_type) %>% 
+  count(depth_bucket)
+
+species_depth_lunges <- write.csv(foo_depth,"species_depth_lunges.csv")

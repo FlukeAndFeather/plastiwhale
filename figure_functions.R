@@ -156,17 +156,20 @@ total_plastic_figure <- function(results){
                         breaks = trans_breaks("log10", function(x) 10^x),
                         labels = trans_format("log10", label_math(10^.x))) +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
           axis.title.x = element_blank())  
 }
 
-total_plastic_med <- total_plastic_figure(all_scenarios)
+total_plastic_med <- total_plastic_figure(all_scenarios %>% 
+                                            filter(scenario_name == "med"))
 total_plastic_med
 
-total_plastic_hi <- total_plastic_figure(results_hi)
+total_plastic_hi <- total_plastic_figure(all_scenarios %>% 
+                                           filter(scenario_name == "hi"))
 total_plastic_hi
 
-total_plastic_lo <- total_plastic_figure(results_lo)
+total_plastic_lo <- total_plastic_figure(all_scenarios %>% 
+                                           filter(scenario_name == "lo"))
 total_plastic_lo
  
 
@@ -197,23 +200,27 @@ plastic_weight_figure <- function(results){
     guides(fill = FALSE) +
     guides(color = FALSE) +
     scale_y_log10(labels = function(x) ifelse(x == 0, "0", x),
-                  limits = c(0.0001, 1000), #max space of graph
+                  limits = c(0.0001, 1100), #max space of graph
                   breaks = c(0.001, 0.01, 0, 1, 10, 100, 1000)) + #where the ticks are
     annotation_logticks(sides = "l") + 
     labs(y = "Total plastic weight (kg)", x = " ")+
     scale_x_discrete(labels = parse(text = levels(whale_latin_names$tick_labels))) +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
           axis.title.x = element_blank())
 }
 
-plastic_weight_med <- plastic_weight_figure(results_med)
+plastic_weight_med <- plastic_weight_figure(all_scenarios %>% 
+                                            filter(scenario_name == "med"))
 plastic_weight_med
 
-plastic_weight_lo <- plastic_weight_figure(results_lo)
+
+plastic_weight_lo <- plastic_weight_figure(all_scenarios %>% 
+                                             filter(scenario_name == "lo"))
 plastic_weight_lo
 
-plastic_weight_hi <- plastic_weight_figure(results_hi)
+plastic_weight_hi <- plastic_weight_figure(all_scenarios %>% 
+                                             filter(scenario_name == "hi"))
 plastic_weight_hi
 
 
@@ -251,17 +258,21 @@ total_pieces_by_species_weight_figure <- function(results) {
     labs(y = bquote('Mass specific total plastic'~(particles~kg^-1)), x = " ") +
     scale_x_discrete(labels = parse(text = levels(whale_latin_names$tick_labels))) +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
           axis.title.x = element_blank())
 }
 
-pieces_by_species_weight_med <- total_pieces_by_species_weight_figure(results_med)
+pieces_by_species_weight_med <- total_pieces_by_species_weight_figure(all_scenarios %>% 
+                                                                        filter(scenario_name == "med"))
 pieces_by_species_weight_med 
 
-pieces_by_species_weight_hi <- total_pieces_by_species_weight_figure(results_hi)
+
+pieces_by_species_weight_hi <- total_pieces_by_species_weight_figure(all_scenarios %>% 
+                                                                       filter(scenario_name == "hi"))
 pieces_by_species_weight_hi
 
-pieces_by_species_weight_lo <- total_pieces_by_species_weight_figure(results_lo)
+pieces_by_species_weight_lo <- total_pieces_by_species_weight_figure(all_scenarios %>% 
+                                                                       filter(scenario_name == "lo"))
 pieces_by_species_weight_lo 
 
 
@@ -299,17 +310,20 @@ mass_specific <- function(results){
     labs(y = "Mass of plastic (kg)/ mass of whale (kg)", x = " ") +
       scale_x_discrete(labels = parse(text = levels(whale_latin_names$tick_labels))) +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+      theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
             axis.title.x = element_blank())
 } 
   
-mass_specific_med <- mass_specific(results_med)
+mass_specific_med <- mass_specific(all_scenarios %>% 
+                                     filter(scenario_name == "med"))
 mass_specific_med
 
-mass_specific_hi <- mass_specific(results_hi)
+mass_specific_hi <- mass_specific(all_scenarios %>% 
+                                    filter(scenario_name == "hi"))
 mass_specific_hi
 
-mass_specific_lo <- mass_specific(results_lo)
+mass_specific_lo <- mass_specific(all_scenarios %>% 
+                                    filter(scenario_name == "lo"))
 mass_specific_lo
 
 

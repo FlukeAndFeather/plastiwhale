@@ -1,4 +1,5 @@
 #Summaries 
+#OLD THIS HAS BEEN IMPROVED IN ALL_SCENARIO_TABLE_SUMMARY
 #go to figure functions
 set.seed(172021)
 

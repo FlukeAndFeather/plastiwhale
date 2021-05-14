@@ -91,3 +91,19 @@ mn_krill_lm_data <- med_weight %>%
 mn_krill_lm <- lm(log(total_plastic_spp_weight) ~ log(length_m), data = mn_krill_lm_data)
 summary(mn_krill_lm)
 
+
+# 
+# ggplot(data = scaling_all, aes(x = log10(mass_skr)) + 
+#          geom_point(y = log10(engulf_m3_skr),
+#                     color = species_code, alpha = 0.05)) +
+#   geom_point(y = log10(daily_lunges),
+#              color = species_code, alpha = 0.05)) +
+#   geom_point(y = log10(total_plastic),
+#              color = species_code, alpha = 0.05) 
+# 
+# 
+#   stat_smooth(data = scaling_all, aes(x = log10(mass_skr), y = log10(engulf_m3_skr), color = "black"), method = "lm", formula = y ~ x, se = FALSE) +
+#   stat_smooth(data = scaling_all, aes(x = log10(mass_skr), y = log10(daily_lunges)), method = "lm", formula = y ~ x, se = FALSE) +
+#   stat_smooth(data = scaling_all, aes(x = log10(mass_skr), y = log10(total_plastic)), method = "lm", formula = y ~ x, se = FALSE)
+
+

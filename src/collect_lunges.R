@@ -4,7 +4,7 @@ alldata_path <- "C:/Users/Gold Field/Documents/Shirel/Chapter 3- Plastic/Plastic
 
 # ---- Utility Functions ----
 #function takes path to alldata and name of file within that folder (lunge files)
-findlungemat <- function(lunge_filename, lunge_dir) { #defining placeholders lunge_dir represents what ever i tell it 
+findlungemat <- function(lunge_filename, lunge_dir) { #defining placeholders lunge_dir represents what ever I tell it 
   
   if (is.na(lunge_filename)){return(NA)}
   dir(lunge_dir, pattern = lunge_filename, full.name= TRUE)
@@ -12,7 +12,7 @@ findlungemat <- function(lunge_filename, lunge_dir) { #defining placeholders lun
 }
 
 #function takes path to alldata and name of file within that folder (prh files)
-findprhmat <- function(prh_filename, prh_dir) {  #defining placeholders lunge_dir represents what ever i tell it 
+findprhmat <- function(prh_filename, prh_dir) {  #defining placeholders lunge_dir represents what ever I tell it 
   
   if (is.na(prh_filename)){return(NA)}
   result <- dir(prh_dir, pattern = prh_filename, full.name= TRUE)
